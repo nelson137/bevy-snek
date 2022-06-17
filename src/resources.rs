@@ -15,6 +15,9 @@ impl Deref for IsDebug {
 }
 
 #[derive(Default)]
+pub(crate) struct DebugSnakePosition(pub(crate) Position);
+
+#[derive(Default)]
 pub(crate) struct SnakeSegments(pub(crate) Vec<Entity>);
 
 #[derive(Default)]

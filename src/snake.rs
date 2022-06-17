@@ -7,7 +7,9 @@ use crate::{
     arena::{ARENA_HEIGHT, ARENA_WIDTH},
     components::{Food, ItemSize, Position, SnakeHead, SnakeSegment},
     events::{GameOverEvent, GameOverReason, GrowthEvent},
-    resources::{IsDebug, LastTailSegmentPosition, SnakeSegments},
+    resources::{
+        DebugSnakePosition, IsDebug, LastTailSegmentPosition, SnakeSegments,
+    },
 };
 
 lazy_static! {
@@ -111,6 +113,7 @@ pub(crate) fn snake_movement_input(
 
 pub(crate) fn snake_movement(
     is_debug: Res<IsDebug>,
+    mut debug_snake_pos: ResMut<DebugSnakePosition>,
     segments: ResMut<SnakeSegments>,
     mut game_over_writer: EventWriter<GameOverEvent>,
     mut last_tail_pos: ResMut<LastTailSegmentPosition>,
@@ -145,7 +148,9 @@ pub(crate) fn snake_movement(
             }
         }
 
-        if !**is_debug {
+        if **is_debug {
+            *debug_snake_pos = DebugSnakePosition(*head_pos);
+        } else {
             if head_pos.x < 0
                 || head_pos.x >= ARENA_WIDTH as i32
                 || head_pos.y < 0

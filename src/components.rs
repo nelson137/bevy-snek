@@ -3,6 +3,9 @@ use bevy::prelude::*;
 use crate::snake::SnakeDirection;
 
 #[derive(Component)]
+pub(crate) struct DebugTextSnakePosition;
+
+#[derive(Component)]
 pub(crate) struct SnakeHead {
     pub(crate) direction: SnakeDirection,
 }
@@ -15,7 +18,7 @@ pub(crate) type AnySnakePiece = Or<(With<SnakeHead>, With<SnakeSegment>)>;
 #[derive(Component)]
 pub(crate) struct Food;
 
-#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Component, Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct Position {
     pub(crate) x: i32,
     pub(crate) y: i32,

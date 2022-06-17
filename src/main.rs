@@ -4,6 +4,7 @@ use clap::Parser;
 mod arena;
 mod cli;
 mod components;
+mod debug_text;
 mod events;
 mod food;
 mod game;
@@ -12,20 +13,26 @@ mod snake;
 
 use arena::{position_translation, size_scaling};
 use cli::Cli;
+use debug_text::{spawn_debug_text, update_snake_head_position_text};
 use events::{GameOverEvent, GrowthEvent};
 use food::food_spawner;
 use game::game_over;
-use resources::{IsDebug, LastTailSegmentPosition, SnakeSegments};
+use resources::{
+    DebugSnakePosition, IsDebug, LastTailSegmentPosition, SnakeSegments,
+};
 use snake::{
     snake_eating, snake_growth, snake_movement, snake_movement_input,
     spawn_snake,
 };
 
+pub(crate) const WIN_WIDTH: f32 = 800.0;
+pub(crate) const WIN_HEIGHT: f32 = 800.0;
+
 fn window_resize(mut windows: ResMut<Windows>) {
     windows
         .get_primary_mut()
         .unwrap()
-        .set_resolution(800.0, 800.0);
+        .set_resolution(WIN_WIDTH, WIN_HEIGHT);
 }
 
 fn setup_camera(mut commands: Commands) {
@@ -52,12 +59,14 @@ fn main() {
         .insert_resource(ClearColor(Color::rgb(0.04, 0.04, 0.04)))
         .insert_resource(SnakeSegments::default())
         .insert_resource(LastTailSegmentPosition::default())
+        .insert_resource(DebugSnakePosition::default())
         // Events
         .add_event::<GrowthEvent>()
         .add_event::<GameOverEvent>()
         // Startup systems
         .add_startup_system(setup_camera)
         .add_startup_system(spawn_snake)
+        .add_startup_system(spawn_debug_text)
         // Systems - arena
         .add_system(window_resize)
         .add_system_set_to_stage(
@@ -73,7 +82,10 @@ fn main() {
                 .with_run_criteria(FixedTimestep::step(0.12))
                 .with_system(snake_movement)
                 .with_system(snake_eating.after(snake_movement))
-                .with_system(snake_growth.after(snake_eating)),
+                .with_system(snake_growth.after(snake_eating))
+                .with_system(
+                    update_snake_head_position_text.after(snake_movement),
+                ),
         )
         .add_system(game_over.after(snake_movement))
         .add_system_set(
