@@ -1,0 +1,12 @@
+[package]
+name = "bevy-snek"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = { version = "0.7", features = ["dynamic"] }
+clap = { version = "3.2", features = ["derive"] }
+lazy_static = "1.4"
+rand = "0.8"
